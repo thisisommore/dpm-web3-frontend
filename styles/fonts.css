@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "Asap Condensed";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+    /* Modern Browsers */ url("./fonts/AsapCondensed-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "Aclonica";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+    /* Modern Browsers */ url("./fonts/Aclonica.ttf") format("truetype");
+}
+
+.asap-condensed {
+  font-family: "Asap Condensed";
+}
+
+.aclonica {
+  font-family: "Aclonica";
+}

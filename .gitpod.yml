@@ -3,5 +3,7 @@ tasks:
     command: yarn dev
 
 ports:
-  - port: 3000
+  - name: Next App
+    description: Development server for Next App
+    port: 3000
     onOpen: open-browser

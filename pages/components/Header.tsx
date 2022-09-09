@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 export default function Header() {
   return (
     <header className="flex justify-between text-2xl md:text-5xl">
@@ -11,7 +11,9 @@ export default function Header() {
 
       <nav className="flex asap-condensed">
         <h2 className="mx-3">CLI</h2>
-        <h2 className="mx-3">DASHBOARD</h2>
+        <Link href="/dashboard">
+          <h2 className="mx-3 cursor-pointer">DASHBOARD</h2>
+        </Link>
       </nav>
     </header>
   );

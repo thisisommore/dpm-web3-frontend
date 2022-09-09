@@ -5,10 +5,15 @@ import { WalletContext } from "../../src/contexts/WalletContext";
 import { PackageMg__factory } from "../../src/contracts";
 import { PackageMgAddr } from "../../src/env";
 
+//TODO: better logic for passing this, maybe some context
+type Props = {
+  active: boolean;
+  onBackDropClick?: () => void;
+};
 type FormValues = {
   packageName: string;
 };
-export default function MintModal() {
+export default function MintModal(p: Props) {
   const { register, handleSubmit } = useForm<FormValues>();
   const walletContext = useContext(WalletContext);
   const onSubmit = async (v: FormValues) => {
@@ -18,14 +23,15 @@ export default function MintModal() {
     await PackageMg.createPackage(v.packageName);
   };
   return (
-    <FormModal>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <FormModal active={p.active} onBackDropClick={p.onBackDropClick}>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
         <input
+          className="bg-white  placeholder:text-slate-900 py-4 px-2 placeholder:font-semibold text-black"
           {...register("packageName")}
           type="text"
           placeholder="Package name"
         />
-        <button>Create</button>
+        <button className="bg-slate-900 p-2 self-end mt-2">Create</button>
       </form>
     </FormModal>
   );

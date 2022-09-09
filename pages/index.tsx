@@ -1,51 +1,64 @@
 import type { NextPage } from "next";
-import Script from "next/script";
-import { useContext } from "react";
-import { WalletContext } from "../src/contexts/WalletContext";
-import style from "../styles/Home.module.css";
+import { useState } from "react";
+import BlueCard, { BlueCardProps } from "../src/components/BlueCard";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
 import MintModal from "./components/MintModal";
 const Home: NextPage = () => {
-  const walletContext = useContext(WalletContext);
+  const [modalActive, setModalActive] = useState(false);
+  const blueCardProps: BlueCardProps[] = [
+    {
+      header_first_word: "Create",
+      header_second_word: "Package",
+      description: "Guess what we need, just the name",
+      buttonAction: () => setModalActive(true),
+      buttonName: "Create",
+    },
+    {
+      header_first_word: "Release",
+      header_second_word: "Version",
+      description: (
+        <>
+          Tag the version add the immutable hash And
+          <span className="text-orange-200"> no one </span>
+          can take down it
+        </>
+      ),
+      buttonAction: () => console.log("Release"),
+      buttonName: "Release",
+    },
+    {
+      header_first_word: "Download",
+      header_second_word: "CLI",
+      description:
+        "CLI is used to fetch the packages from decentralised Registry",
+      buttonAction: () => console.log("Download"),
+      buttonName: "DOWNLOAD",
+    },
+  ];
   return (
     <>
-      <MintModal />
-      <Script src="https://code.iconify.design/2/2.2.1/iconify.min.js" />
-      <div className="p-12" style={style}>
-        <header className="flex justify-between text-3xl">
-          <div className="div aclonica">
-            <h1 className="text-orange-600">NPM</h1>
-            <h1>IN</h1>
-            <h1 className="text-purple-600">WEB3</h1>
-          </div>
+      <MintModal
+        active={modalActive}
+        onBackDropClick={() => setModalActive(false)}
+      />
 
-          <nav className="flex asap-condensed">
-            <h2 className="mx-3">CLI</h2>
-            <h2 className="mx-3">DASHBOARD</h2>
-          </nav>
-        </header>
-        {walletContext.web3Provider ? (
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={walletContext.clearWallet}
-          >
-            <span
-              className="iconify"
-              data-icon="fluent:plug-connected-checkmark-20-regular"
-            ></span>
-            <p className="mx-1 mb-1">{walletContext.walletAddress}</p>
-          </div>
-        ) : (
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={walletContext.getWeb3Provider}
-          >
-            <span
-              className="iconify"
-              data-icon="fluent:plug-disconnected-20-regular"
-            ></span>
-            <p className="mx-1 mb-1">not connected</p>
-          </div>
-        )}
+      <div className="p-6 md:p-12 w-full">
+        <Header />
+        <div className="flex flex-col md:flex-row my-6 w-full">
+          {blueCardProps.map((d, i) => (
+            <BlueCard
+              key={i}
+              header_first_word={d.header_first_word}
+              header_second_word={d.header_second_word}
+              description={d.description}
+              buttonAction={d.buttonAction}
+              buttonName={d.buttonName}
+            />
+          ))}
+        </div>
+
+        <Footer />
       </div>
     </>
   );

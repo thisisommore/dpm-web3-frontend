@@ -4,14 +4,17 @@ import BlueCard, { BlueCardProps } from "../src/components/BlueCard";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import MintModal from "./components/MintModal";
+import ReleaseModal from "./components/ReleaseModal";
 const Home: NextPage = () => {
-  const [modalActive, setModalActive] = useState(false);
+  const [mintModalActive, setMintModalActive] = useState(false);
+  const [releaseModalActive, setReleaseModalActive] = useState(false);
+
   const blueCardProps: BlueCardProps[] = [
     {
       header_first_word: "Create",
       header_second_word: "Package",
       description: "Guess what we need, just the name",
-      buttonAction: () => setModalActive(true),
+      buttonAction: () => setMintModalActive(true),
       buttonName: "Create",
     },
     {
@@ -24,7 +27,7 @@ const Home: NextPage = () => {
           can take down it
         </>
       ),
-      buttonAction: () => console.log("Release"),
+      buttonAction: () => setReleaseModalActive(true),
       buttonName: "Release",
     },
     {
@@ -39,8 +42,12 @@ const Home: NextPage = () => {
   return (
     <>
       <MintModal
-        active={modalActive}
-        onBackDropClick={() => setModalActive(false)}
+        active={mintModalActive}
+        onBackDropClick={() => setMintModalActive(false)}
+      />
+      <ReleaseModal
+        active={releaseModalActive}
+        onBackDropClick={() => setReleaseModalActive(false)}
       />
 
       <div className="p-6 md:p-12 w-full">

@@ -29,20 +29,28 @@ import type {
 export interface PackageMgInterface extends utils.Interface {
   functions: {
     "createPackage(string)": FunctionFragment;
+    "getRelease(string,string)": FunctionFragment;
     "nameToPackage(string)": FunctionFragment;
-    "releaseNewVersion(string,string,string)": FunctionFragment;
+    "releaseNewVersion(string,string,string,bool)": FunctionFragment;
+    "setDefaultVersion(string,string)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "createPackage"
+      | "getRelease"
       | "nameToPackage"
       | "releaseNewVersion"
+      | "setDefaultVersion"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "createPackage",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRelease",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "nameToPackage",
@@ -53,14 +61,20 @@ export interface PackageMgInterface extends utils.Interface {
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
-      PromiseOrValue<string>
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setDefaultVersion",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
 
   decodeFunctionResult(
     functionFragment: "createPackage",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "getRelease", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nameToPackage",
     data: BytesLike
@@ -69,15 +83,33 @@ export interface PackageMgInterface extends utils.Interface {
     functionFragment: "releaseNewVersion",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "setDefaultVersion",
+    data: BytesLike
+  ): Result;
 
   events: {
+    "DefaultVersionChanged(string,string)": EventFragment;
     "PackageCreated(address,string)": EventFragment;
-    "PackageVersionCreated(string,string,string)": EventFragment;
+    "PackageVersionCreated(string,string,string,bool)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "DefaultVersionChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PackageCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PackageVersionCreated"): EventFragment;
 }
+
+export interface DefaultVersionChangedEventObject {
+  pkgName: string;
+  versionName: string;
+}
+export type DefaultVersionChangedEvent = TypedEvent<
+  [string, string],
+  DefaultVersionChangedEventObject
+>;
+
+export type DefaultVersionChangedEventFilter =
+  TypedEventFilter<DefaultVersionChangedEvent>;
 
 export interface PackageCreatedEventObject {
   owner: string;
@@ -94,9 +126,10 @@ export interface PackageVersionCreatedEventObject {
   pkgName: string;
   versionName: string;
   dataHash: string;
+  changeDefaultVersion: boolean;
 }
 export type PackageVersionCreatedEvent = TypedEvent<
-  [string, string, string],
+  [string, string, string, boolean],
   PackageVersionCreatedEventObject
 >;
 
@@ -135,15 +168,28 @@ export interface PackageMg extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getRelease(
+      pkgName: PromiseOrValue<string>,
+      pkgVersion: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     nameToPackage(
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<[string] & { owner: string }>;
+    ): Promise<[string, string] & { owner: string; defaultVersion: string }>;
 
     releaseNewVersion(
       packageName: PromiseOrValue<string>,
       versionName: PromiseOrValue<string>,
       dataHash: PromiseOrValue<string>,
+      isDefault: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setDefaultVersion(
+      packageName: PromiseOrValue<string>,
+      versionName: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -153,15 +199,28 @@ export interface PackageMg extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getRelease(
+    pkgName: PromiseOrValue<string>,
+    pkgVersion: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   nameToPackage(
     arg0: PromiseOrValue<string>,
     overrides?: CallOverrides
-  ): Promise<string>;
+  ): Promise<[string, string] & { owner: string; defaultVersion: string }>;
 
   releaseNewVersion(
     packageName: PromiseOrValue<string>,
     versionName: PromiseOrValue<string>,
     dataHash: PromiseOrValue<string>,
+    isDefault: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setDefaultVersion(
+    packageName: PromiseOrValue<string>,
+    versionName: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -171,35 +230,59 @@ export interface PackageMg extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    getRelease(
+      pkgName: PromiseOrValue<string>,
+      pkgVersion: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     nameToPackage(
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<[string, string] & { owner: string; defaultVersion: string }>;
 
     releaseNewVersion(
       packageName: PromiseOrValue<string>,
       versionName: PromiseOrValue<string>,
       dataHash: PromiseOrValue<string>,
+      isDefault: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setDefaultVersion(
+      packageName: PromiseOrValue<string>,
+      versionName: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
 
   filters: {
+    "DefaultVersionChanged(string,string)"(
+      pkgName?: null,
+      versionName?: null
+    ): DefaultVersionChangedEventFilter;
+    DefaultVersionChanged(
+      pkgName?: null,
+      versionName?: null
+    ): DefaultVersionChangedEventFilter;
+
     "PackageCreated(address,string)"(
       owner?: null,
       pkgName?: null
     ): PackageCreatedEventFilter;
     PackageCreated(owner?: null, pkgName?: null): PackageCreatedEventFilter;
 
-    "PackageVersionCreated(string,string,string)"(
+    "PackageVersionCreated(string,string,string,bool)"(
       pkgName?: null,
       versionName?: null,
-      dataHash?: null
+      dataHash?: null,
+      changeDefaultVersion?: null
     ): PackageVersionCreatedEventFilter;
     PackageVersionCreated(
       pkgName?: null,
       versionName?: null,
-      dataHash?: null
+      dataHash?: null,
+      changeDefaultVersion?: null
     ): PackageVersionCreatedEventFilter;
   };
 
@@ -209,6 +292,12 @@ export interface PackageMg extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    getRelease(
+      pkgName: PromiseOrValue<string>,
+      pkgVersion: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     nameToPackage(
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -218,6 +307,13 @@ export interface PackageMg extends BaseContract {
       packageName: PromiseOrValue<string>,
       versionName: PromiseOrValue<string>,
       dataHash: PromiseOrValue<string>,
+      isDefault: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setDefaultVersion(
+      packageName: PromiseOrValue<string>,
+      versionName: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -228,6 +324,12 @@ export interface PackageMg extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    getRelease(
+      pkgName: PromiseOrValue<string>,
+      pkgVersion: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     nameToPackage(
       arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -237,6 +339,13 @@ export interface PackageMg extends BaseContract {
       packageName: PromiseOrValue<string>,
       versionName: PromiseOrValue<string>,
       dataHash: PromiseOrValue<string>,
+      isDefault: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setDefaultVersion(
+      packageName: PromiseOrValue<string>,
+      versionName: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

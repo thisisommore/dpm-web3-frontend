@@ -12,6 +12,25 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "string",
+        name: "pkgName",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "versionName",
+        type: "string",
+      },
+    ],
+    name: "DefaultVersionChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "owner",
         type: "address",
@@ -47,6 +66,12 @@ const _abi = [
         name: "dataHash",
         type: "string",
       },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "changeDefaultVersion",
+        type: "bool",
+      },
     ],
     name: "PackageVersionCreated",
     type: "event",
@@ -68,6 +93,30 @@ const _abi = [
     inputs: [
       {
         internalType: "string",
+        name: "pkgName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "pkgVersion",
+        type: "string",
+      },
+    ],
+    name: "getRelease",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
         name: "",
         type: "string",
       },
@@ -78,6 +127,11 @@ const _abi = [
         internalType: "address",
         name: "owner",
         type: "address",
+      },
+      {
+        internalType: "string",
+        name: "defaultVersion",
+        type: "string",
       },
     ],
     stateMutability: "view",
@@ -100,8 +154,31 @@ const _abi = [
         name: "dataHash",
         type: "string",
       },
+      {
+        internalType: "bool",
+        name: "isDefault",
+        type: "bool",
+      },
     ],
     name: "releaseNewVersion",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "packageName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "versionName",
+        type: "string",
+      },
+    ],
+    name: "setDefaultVersion",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

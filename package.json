@@ -9,7 +9,7 @@
     "lint": "next lint",
     "postinstall": "npm run codegen",
     "typechain-gen": "rm -rf src/contracts/*.ts src/contracts/factories && typechain --target ethers-v5 --out-dir src/contracts './src/contracts/abis/*.json'",
-    "codegen": "npm run graphql-gen && npm run typechain-gen",
+    "codegen": "npm run graphql-gen && npm run typechain-gen && rm -rf __generated__",
     "graphql-gen": "apollo service:download --endpoint=https://api.thegraph.com/subgraphs/name/thisisommore/package-mg-subgraph ./src/graph-ql/graphql-schema.json && apollo codegen:generate --localSchemaFile=./src/graph-ql/graphql-schema.json --target=typescript --tagName=gql"
   },
   "dependencies": {

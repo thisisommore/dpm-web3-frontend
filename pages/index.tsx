@@ -35,7 +35,9 @@ const Home: NextPage = () => {
       header_second_word: "CLI",
       description:
         "CLI is used to fetch the packages from decentralised Registry",
-      buttonAction: () => console.log("Download"),
+      buttonAction: () =>
+        (window.location.href =
+          "https://github.com/thisisommore/dpm-web3-cli/releases/tag/v0.0.1"),
       buttonName: "DOWNLOAD",
     },
   ];
